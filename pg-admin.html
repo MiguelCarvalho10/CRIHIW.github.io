@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css"> <!-- Link para o CSS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Link para jQuery -->
+    <title>Página de administrador</title>
+</head>
+<body>
+
+<h1 id="tit">Todos os registros do Banco de Dados:</h1>
+
+<div id="records">
+    <!-- Registros serão carregados aqui -->
+</div>
+
+<!-- Botões -->
+<button id="btnRegister">Cadastrar Novo Registro</button>
+<button id="btnSearch">Pesquisar por Login</button>
+
+<!-- Modal para cadastro de novo registro -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Cadastrar Novo Registro</h2>
+        <form id="registerForm">
+            <label for="login" class="model-label">Login:</label>
+            <input type="text" id="login" name="login" required><br>
+
+            <label for="senha" class="modal-label">Senha:</label>
+            <input type="password" id="senha" name="senha" required><br>
+
+            <label for="nome" class="model-label">Nome:</label>
+            <input type="text" id="nome" name="nome" required><br>
+
+            <label for="email" class="model-label">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para pesquisa -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Pesquisar Registro</h2>
+        <form id="searchForm">
+            <label for="searchLogin">Login:</label>
+            <input type="text" id="searchLogin" name="searchLogin" required><br>
+
+            <button type="submit">Pesquisar</button>
+        </form>
+
+        <div id="searchResult"></div> <!-- Resultado da pesquisa -->
+    </div>
+</div>
+
+<script>
+    // Função para carregar registros
+    function loadRecords() {
+        $.ajax({
+            url: 'getRecords.php',
+            type: 'GET',
+            success: function(data) {
+                $('#records').html(data);
+            },
+            error: function() {
+                alert('Erro ao carregar os registros.');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        // Carregar os registros ao abrir a página
+        loadRecords();
+
+        // Modal de cadastro
+        var registerModal = $('#registerModal');
+        var searchModal = $('#searchModal');
+
+        // Botão de cadastro
+        $('#btnRegister').click(function() {
+            registerModal.show();
+        });
+
+        // Botão de pesquisa
+        $('#btnSearch').click(function() {
+            searchModal.show();
+        });
+
+        // Fechar modal quando clicar no 'X'
+        $('.close').click(function() {
+            registerModal.hide();
+            searchModal.hide();
+        });
+
+        // Cadastro de novo registro via AJAX
+        $('#registerForm').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: 'register.php',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    alert(response);
+                    registerModal.hide();
+                    loadRecords(); // Recarregar registros após cadastro
+                },
+                error: function() {
+                    alert('Erro ao cadastrar registro.');
+                }
+            });
+        });
+
+        // Pesquisa de registro via AJAX
+        $('#searchForm').submit(function(event) {
+            event.preventDefault();
+            var login = $('#searchLogin').val();
+
+            $.ajax({
+                url: 'search.php',
+                type: 'GET',
+                data: { login: login },
+                success: function(data) {
+                    $('#searchResult').html(data);
+                },
+                error: function() {
+                    alert('Erro ao buscar registro.');
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    // Carrega os registros assim que a página é carregada
+    $(document).ready(function() {
+        $.ajax({
+            url: 'getRecords.php',
+            type: 'GET',
+            success: function(data) {
+                $('#records').html(data); // Insere os dados na div
+            },
+            error: function() {
+                alert('Erro ao carregar os registros.');
+            }
+        });
+    });
+</script>
+
+<style>
+    #tit{
+        color: black;
+    }
+
+    /* Estilos para o modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color:#000000;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+}
+
+.close {
+    color: #000000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+</style>
+</body>
+</html>

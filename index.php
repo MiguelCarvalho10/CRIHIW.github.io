@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="css/style.css">
+<script src="arquivo.js"></script>
+			<title>PÁGINA DE LOGIN</title>
+		</head>
+<body>
+
+<form method="post" action="login.php" id="login" name="login" >
+<fieldset id="fie">
+<p><legend>LOGIN</legend></p>
+<p><label>Login : </label>
+<input type="text" name="login" id="login"  /></p>
+<p><label>SENHA :</label>
+<input type="password" name="senha" id="senha" /></p>
+<center><input type="submit" value="FAZER LOGIN" id="entrar" name="entrar"  /></center>
+</fieldset>
+</form>
+
+<form method="post" action="cadastrar.php" id="cadastrar" name="cadastrar" >
+<fieldset id="cad">
+            <p><legend>CASO NÃO TENHA LOGIN, CADASTRE-SE</legend></p>
+				
+				<p><label for='name'>Nome  </label>						
+				<input type="text" name="nome"  id="name" /></p>
+				
+				<p><label for='email'>Email</label>						
+				<input type="text" name="email"  id="email" /></p>	
+				
+				<p><label for='login'>Login</label>						
+				<input type="text" name="login"  id="login" /></p>
+				
+				<p><label for='senha'>Senha</label>						
+				<input type="password" name="senha"  id="senha" /></p>
+        <center>
+		        <input type="submit" value="CADASTRE-SE"  />
+                <input type="reset"  name="reset" title="reset" value="Limpar">
+        </center>
+</fieldset>
+</form>
+<form name='dados' action='excluir.php'  method='POST'>
+			
+		<fieldset>
+				<legend>Digite seu email para efetuar a pesquisa</legend>
+				
+				<p><label for='email'>Email</label>						
+				<input type="text" name="email"  id="email" /></p>				
+											
+			<center><input type="submit" name="pesquisar" title="pesquisar" value="Pesquisar"></center>
+		</fieldset>	
+</form>	
+</body>
+</html>
