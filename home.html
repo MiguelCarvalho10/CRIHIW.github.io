@@ -49,7 +49,9 @@
 					<ul>
 						<li><a href="home.html">Home</a></li>
 						<li><a href="sobrenos.html">Sobre nós</a></li>
-						<li><a href="pg-admin.html">Ver Registros</a></li>
+						<li><a href="#" onclick="checkPassword()">Página ADM</a></li>
+
+
 					</ul>
 				</nav>
 
@@ -198,7 +200,17 @@
 								</li>
 							</ul>
 						</section>
-
+								<script>
+function checkPassword() {
+    const password = prompt("Digite a senha para acessar a página ADM:");
+    const correctPassword = "suaSenhaSegura"; // Substitua por sua senha real
+    if (password === correctPassword) {
+        window.location.href = "pg-admin.html";
+    } else {
+        alert("Senha incorreta! Você não tem permissão para acessar a página.");
+    }
+}
+</script>
 					<!-- Photos -->
 					<section class="4u">
 						<header>
