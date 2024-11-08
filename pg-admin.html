@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css"> <!-- Link para o CSS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Link para jQuery -->
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Página de administrador</title>
 </head>
 <body>
@@ -24,16 +24,16 @@
         <span class="close">&times;</span>
         <h2>Cadastrar Novo Registro</h2>
         <form id="registerForm">
-            <label for="login" class="model-label">Login:</label>
+            <label for="login">Login:</label>
             <input type="text" id="login" name="login" required><br>
 
-            <label for="senha" class="modal-label">Senha:</label>
+            <label for="senha">Senha:</label>
             <input type="password" id="senha" name="senha" required><br>
 
-            <label for="nome" class="model-label">Nome:</label>
+            <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required><br>
 
-            <label for="email" class="model-label">Email:</label>
+            <label for="email">Email:</label>
             <input type="email" id="email" name="email" required><br>
 
             <button type="submit">Cadastrar</button>
@@ -52,19 +52,56 @@
 
             <button type="submit">Pesquisar</button>
         </form>
+        <div id="searchResult"></div>
+    </div>
+</div>
 
-        <div id="searchResult"></div> <!-- Resultado da pesquisa -->
+<!-- Modal para editar registro -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Editar Registro</h2>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+            <label for="editLogin">Login:</label>
+            <input type="text" id="editLogin" name="login" required><br>
+
+            <label for="editSenha">Senha:</label>
+            <input type="password" id="editSenha" name="senha" required><br>
+
+            <label for="editNome">Nome:</label>
+            <input type="text" id="editNome" name="nome" required><br>
+
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" name="email" required><br>
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para confirmação de exclusão -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Excluir Registro</h2>
+        <p>Tem certeza que deseja excluir este registro?</p>
+        <button id="confirmDelete">Confirmar</button>
+        <button class="close">Cancelar</button>
     </div>
 </div>
 
 <script>
-    // Função para carregar registros
+    // Função para carregar registros com botões de editar e deletar
     function loadRecords() {
         $.ajax({
             url: 'getRecords.php',
             type: 'GET',
             success: function(data) {
                 $('#records').html(data);
+                // Ativar botões de editar e deletar nos registros
+                $('.edit-btn').click(showEditModal);
+                $('.delete-btn').click(showDeleteModal);
             },
             error: function() {
                 alert('Erro ao carregar os registros.');
@@ -73,30 +110,26 @@
     }
 
     $(document).ready(function() {
-        // Carregar os registros ao abrir a página
         loadRecords();
 
-        // Modal de cadastro
         var registerModal = $('#registerModal');
         var searchModal = $('#searchModal');
+        var editModal = $('#editModal');
+        var deleteModal = $('#deleteModal');
 
-        // Botão de cadastro
-        $('#btnRegister').click(function() {
-            registerModal.show();
-        });
+        // Botões para abrir modais
+        $('#btnRegister').click(function() { registerModal.show(); });
+        $('#btnSearch').click(function() { searchModal.show(); });
 
-        // Botão de pesquisa
-        $('#btnSearch').click(function() {
-            searchModal.show();
-        });
-
-        // Fechar modal quando clicar no 'X'
+        // Fechar modais
         $('.close').click(function() {
             registerModal.hide();
             searchModal.hide();
+            editModal.hide();
+            deleteModal.hide();
         });
 
-        // Cadastro de novo registro via AJAX
+        // Formulário de cadastro
         $('#registerForm').submit(function(event) {
             event.preventDefault();
             var formData = $(this).serialize();
@@ -108,7 +141,7 @@
                 success: function(response) {
                     alert(response);
                     registerModal.hide();
-                    loadRecords(); // Recarregar registros após cadastro
+                    loadRecords();
                 },
                 error: function() {
                     alert('Erro ao cadastrar registro.');
@@ -116,83 +149,79 @@
             });
         });
 
-        // Pesquisa de registro via AJAX
-        $('#searchForm').submit(function(event) {
+        // Formulário de edição
+        $('#editForm').submit(function(event) {
             event.preventDefault();
-            var login = $('#searchLogin').val();
+            var formData = $(this).serialize();
 
             $.ajax({
-                url: 'search.php',
-                type: 'GET',
-                data: { login: login },
-                success: function(data) {
-                    $('#searchResult').html(data);
+                url: 'edit.php',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    alert(response);
+                    editModal.hide();
+                    loadRecords();
                 },
                 error: function() {
-                    alert('Erro ao buscar registro.');
+                    alert('Erro ao editar registro.');
+                }
+            });
+        });
+
+        // Função para mostrar o modal de edição e carregar dados
+        function showEditModal() {
+            var id = $(this).data('id');
+
+            $.ajax({
+                url: 'getRecord.php',
+                type: 'GET',
+                data: { id: id },
+                success: function(data) {
+                    var record = JSON.parse(data);
+                    $('#editId').val(record.id);
+                    $('#editLogin').val(record.login);
+                    $('#editSenha').val(record.senha);
+                    $('#editNome').val(record.nome);
+                    $('#editEmail').val(record.email);
+                    editModal.show();
+                },
+                error: function() {
+                    alert('Erro ao carregar os dados do registro.');
+                }
+            });
+        }
+
+        // Função para mostrar o modal de exclusão
+        function showDeleteModal() {
+            var id = $(this).data('id');
+            $('#confirmDelete').data('id', id);
+            deleteModal.show();
+        }
+
+        // Confirmar exclusão
+        $('#confirmDelete').click(function() {
+            var id = $(this).data('id');
+
+            $.ajax({
+                url: 'delete.php',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    alert(response);
+                    deleteModal.hide();
+                    loadRecords();
+                },
+                error: function() {
+                    alert('Erro ao excluir registro.');
                 }
             });
         });
     });
 </script>
 
-<script>
-    // Carrega os registros assim que a página é carregada
-    $(document).ready(function() {
-        $.ajax({
-            url: 'getRecords.php',
-            type: 'GET',
-            success: function(data) {
-                $('#records').html(data); // Insere os dados na div
-            },
-            error: function() {
-                alert('Erro ao carregar os registros.');
-            }
-        });
-    });
-</script>
-
 <style>
-    #tit{
-        color: black;
-    }
-
-    /* Estilos para o modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    color:#000000;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background-color: #ffffff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 400px;
-}
-
-.close {
-    color: #000000;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
+    /* ... Estilos do modal ... */
 </style>
 </body>
 </html>
