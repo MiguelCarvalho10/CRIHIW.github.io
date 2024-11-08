@@ -9,42 +9,32 @@
 <body>
 
 <?php
-   include "conectar.php"; /* chama o arquivo conectar.php */
-?>
+include 'supabase.php';
 
-<?php
-/*Recuperamos as informações do formulario */
-$nome = $_POST["nome"];  //variavel $nome recebe o campo nome enviado através do metodo Post
-$email = $_POST["email"];
-$login = $_POST["login"];
-$senha = MD5($_POST["senha"]);
+$nome = $_POST['nome'];
+$login = $_POST['login'];
+$senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Criptografe a senha
+$email = $_POST['email'];
 
-/*Inserindo as informações na tabela usuario */
+$data = [
+    "nome" => $nome,
+    "login" => $login,
+    "senha" => $senha,
+    "email" => $email
+];
 
-mysqli_query($conexao, "INSERT INTO usuarios(nome, email, login, senha) VALUES ('$nome','$email','$login','$senha')") or die("Usuário não cadastrado!"); 
+$options['http']['method'] = "POST";
+$options['http']['content'] = json_encode($data);
+$context = stream_context_create($options);
 
-//fecha conexão
-mysqli_close($conexao);
-/*exibindo mensagem de usuário cadastrado com sucesso */
-echo"<script language='javascript' type='text/javascript'>
-         alert('USUÁRIO CADASTRADO COM SUCESSO!!!');
-         window.location.href='index.php';</script>";
+$url = "$supabase_url/rest/v1/usuarios";
+$response = file_get_contents($url, false, $context);
 
-         if (isset($entrar)) {
-
-    $verifica= mysqli_query($conexao, "SELECT * FROM usuarios WHERE login ='$login' AND senha = '$senha'") or die ("erro");
-      if (mysqli_num_rows($verifica)<=0){
-         echo"<script language='javascript' type='text/javascript'>
-         alert('LOGIN E SENHA INCORRETOS OU USUÁRIO NÃO CADASTRADO');
-         window.location.href='index.html';</script>";
-      }else{
-          
-         echo"<script language='javascript' type='text/javascript'>
-         alert('LOGIN EFETUADO COM SUCESSO!');
-         window.location.href='site.html';</script>";  
-   
-      }
-  }
+if ($response === FALSE) {
+    echo "Erro ao cadastrar usuário.";
+} else {
+    echo "Usuário cadastrado com sucesso!";
+}
 ?>
 
 </body>
