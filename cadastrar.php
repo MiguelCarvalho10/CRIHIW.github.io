@@ -9,7 +9,7 @@
 <body>
 
 <?php
-include 'supabase.php';
+include 'conectar.php';
 
 $nome = $_POST['nome'];
 $email = $_POST['email'];
