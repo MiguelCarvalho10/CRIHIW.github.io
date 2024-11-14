@@ -12,9 +12,10 @@
 include 'supabase.php';
 
 $nome = $_POST['nome'];
+$email = $_POST['email'];
 $login = $_POST['login'];
 $senha = $_POST['senha']; // Criptografe a senha
-$email = $_POST['email'];
+
 
 // Dados a serem enviados
 $data = [
