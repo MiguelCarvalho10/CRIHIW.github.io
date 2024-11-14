@@ -27,7 +27,7 @@ $options['http']['method'] = "POST";
 $options['http']['content'] = json_encode($data);
 $context = stream_context_create($options);
 
-$url = "$supabase_url/rest/v1/usuarios";
+$url = "$https://supabase.com/dashboard/project/sidvugqnlopeaikwlzov/database/schemas";
 $response = file_get_contents($url, false, $context);
 
 if ($response === FALSE) {
