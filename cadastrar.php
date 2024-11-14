@@ -16,6 +16,7 @@ $login = $_POST['login'];
 $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Criptografe a senha
 $email = $_POST['email'];
 
+// Dados a serem enviados
 $data = [
     "nome" => $nome,
     "login" => $login,
@@ -23,11 +24,23 @@ $data = [
     "email" => $email
 ];
 
-$options['http']['method'] = "POST";
-$options['http']['content'] = json_encode($data);
+// Adicione o cabeçalho e o método POST para enviar os dados
+$options = [
+    "http" => [
+        "header" => [
+            "Authorization: Bearer $supabase_key",
+            "Content-Type: application/json"
+        ],
+        "method" => "POST",
+        "content" => json_encode($data)
+    ]
+];
+
 $context = stream_context_create($options);
 
-$url = "https://sidvugqnlopeaikwlzov.supabase.co/rest/v1/usuarios";
+// Altere a URL para o endpoint correto
+$url = "https://sidvugqnlopeaikwlzov.supabase.co/rest/v1/usuarios";  // Substitua pelo nome da sua tabela
+
 $response = file_get_contents($url, false, $context);
 
 if ($response === FALSE) {
@@ -36,6 +49,7 @@ if ($response === FALSE) {
     echo "Usuário cadastrado com sucesso!";
 }
 ?>
+
 
 </body>
 </html>
