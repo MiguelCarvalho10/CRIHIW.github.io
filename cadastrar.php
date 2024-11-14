@@ -13,7 +13,7 @@ include 'supabase.php';
 
 $nome = $_POST['nome'];
 $login = $_POST['login'];
-$senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Criptografe a senha
+$senha = $_POST['senha']; // Criptografe a senha
 $email = $_POST['email'];
 
 // Dados a serem enviados
