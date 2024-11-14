@@ -4,53 +4,56 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="estilo.css">
 <script src="arquivo.js"></script>
-<title>Cadastrando Usuarios</title>
+<title>Cadastrando Usuários</title>
 </head>
 <body>
 
 <?php
-include 'supabase.php';
+include 'supabase.php'; // Verifique se a chave está definida aqui
 
-$nome = $_POST['nome'];
-$email = $_POST['email'];
-$login = $_POST['login'];
-$senha = $_POST['senha']; // Criptografe a senha
+// Obtenha os dados do formulário
+$nome = $_POST['nome'] ?? '';
+$email = $_POST['email'] ?? '';
+$login = $_POST['login'] ?? '';
+$senha = $_POST['senha'] ?? ''; 
 
+// Criptografe a senha antes de enviar para o banco
+$senha_hash = password_hash($senha, PASSWORD_BCRYPT);
 
-// Dados a serem enviados
+// Dados a serem enviados para a API Supabase
 $data = [
     "nome" => $nome,
     "login" => $login,
-    "senha" => $senha,
+    "senha" => $senha_hash, // Envie a senha criptografada
     "email" => $email
 ];
 
-// Adicione o cabeçalho e o método POST para enviar os dados
-$options = [
-    "http" => [
-        "header" => [
-            "Authorization: Bearer $supabase_key",
-            "Content-Type: application/json"
-        ],
-        "method" => "POST",
-        "content" => json_encode($data)
-    ]
-];
+// Configurações para a requisição HTTP com cURL
+$url = "https://sidvugqnlopeaikwlzov.supabase.co/rest/v1/usuarios";  // Substitua pelo endpoint da sua tabela
+$ch = curl_init($url);
 
-$context = stream_context_create($options);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Authorization: Bearer $supabase_key", // Chave de autenticação
+    "Content-Type: application/json",      // Tipo de conteúdo
+    "apikey: $supabase_key"                // API key, pode ser necessário em alguns casos
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-// Altere a URL para o endpoint correto
-$url = "https://sidvugqnlopeaikwlzov.supabase.co/rest/v1/usuarios";  // Substitua pelo nome da sua tabela
+// Executa a requisição
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); // Obtenha o código HTTP para verificar o status
 
-$response = file_get_contents($url, false, $context);
+curl_close($ch);
 
-if ($response === FALSE) {
-    echo "Erro ao cadastrar usuário.";
-} else {
+// Verifica a resposta
+if ($http_code === 201) { // 201 Created indica sucesso
     echo "Usuário cadastrado com sucesso!";
+} else {
+    echo "Erro ao cadastrar usuário. Código de resposta HTTP: " . $http_code;
 }
 ?>
-
 
 </body>
 </html>
