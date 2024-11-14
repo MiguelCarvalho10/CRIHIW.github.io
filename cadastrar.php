@@ -40,7 +40,7 @@ $options = [
 $context = stream_context_create($options);
 
 // Altere a URL para o endpoint correto
-$url = "https://sidvugqnlopeaikwlzov.supabase.co/usuarios";  // Substitua pelo nome da sua tabela
+$url = "https://sidvugqnlopeaikwlzov.supabase.co/rest/v1/usuarios";  // Substitua pelo nome da sua tabela
 
 $response = file_get_contents($url, false, $context);
 
