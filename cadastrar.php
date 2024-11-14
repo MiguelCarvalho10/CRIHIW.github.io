@@ -29,7 +29,7 @@ $data = [
 ];
 
 // Configurações para a requisição HTTP com cURL
-$url = "https://sidvugqnlopeaikwlzov.supabase.co/storage/v1/s3";  // Substitua pelo endpoint da sua tabela
+$url = "https://sidvugqnlopeaikwlzov.supabase.co/storage/v1/s3/usuarios";  // Substitua pelo endpoint da sua tabela
 $ch = curl_init($url);
 
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
