@@ -10,7 +10,7 @@
 
 <?php
 include 'conectar.php'; // Verifique se a chave está definida aqui
-
+include 'supabase.php'; // Verifique se a chave está definida aqui
 // Obtenha os dados do formulário
 $nome = $_POST['nome'] ?? '';
 $email = $_POST['email'] ?? '';
